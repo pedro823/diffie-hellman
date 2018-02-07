@@ -3,3 +3,5 @@ class Error(Exception):
         pass
     class ConnectionError:
         pass
+    class SecurityError:
+        pass
