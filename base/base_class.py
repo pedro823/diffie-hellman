@@ -7,7 +7,7 @@ class BaseClass:
         if self.logger_outfile != 'stdout':
             self.log_file = open(outfile, 'a') # Auto-raises error
 
-    def log(priority, *args):
+    def log(self, priority, *args):
         if priority >= min_priority:
             msg = '[' + str(priority) + '] ' \
                   + self.class_name + ' -- ' \

@@ -38,7 +38,9 @@ class Messenger(BaseClass):
         self.socket.setblocking(True)
         while True:
             conn, addr = self.socket.accept()
-
+            flag = connect_function(conn, addr)
+            if flag:
+                break
 
     def receive(self):
         """
