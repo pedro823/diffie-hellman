@@ -3,7 +3,7 @@
 
 # Establishes what methods messengers are allowed to call
 # Tipically, this should only be the ones established in the protocol
-ALLOWED_METHODS = []
+ALLOWED_METHODS = ['sync']
 
 # Establishes the max size of each chunk read by a reading messenger.
 # Generally a small power of 2 (8192, 4096)

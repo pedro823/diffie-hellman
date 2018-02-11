@@ -1,9 +1,9 @@
+from socket import *
 import base64
 import threading
-from socket import *
-from base.constants import ALLOWED_METHODS
-from base.error import Error
+from base.constants import ALLOWED_METHODS, CHUNK_SIZE, SEPARATOR
 from base.base_class import BaseClass
+import base.error as error
 
 class Messenger(BaseClass):
     """ Class responsible for handling sockets inside diffie-hellman protocol. """
@@ -53,7 +53,7 @@ class Messenger(BaseClass):
         while True:
             chunk = self.socket.recv(CHUNK_SIZE)
             if chunk == b'':
-                raise Error.Messenger.ConnectionError('Connection broken')
+                raise error.ConnectionError('Connection broken')
             msg += chunk
             if b_separator in chunk:
                 break
@@ -74,17 +74,17 @@ class Messenger(BaseClass):
             try:
                 self.send_msg(msg[0], *msg[1:])
             except TypeError:
-                raise Error.Messenger.MessengerError('msg_list must be a list of arguments to pass to send_msg')
+                raise error.MessengerError('msg_list must be a list of arguments to pass to send_msg')
 
     def send_msg(self, method, *args):
         """ Sends a single message following our Diffie-hellman protocol """
         if method not in ALLOWED_METHODS:
-            raise Error.Messenger.MessengerError('method not allowed')
+            raise error.MessengerError('method not allowed')
 
         full_message = bytearray(method, encoding='utf-8')
         for i in args:
             if type(i) not in [bytes, bytearray]:
-                raise Error.Messenger.MessengerError('Not all arguments are bytes: %s' % i)
+                raise error.MessengerError('Not all arguments are bytes: %s' % i)
             full_message += i
         full_message += SEPARATOR.encode('utf-8')
 
@@ -94,9 +94,9 @@ class Messenger(BaseClass):
         i = 0
         while i < max_length:
             # Sends message in chunks
-            sent = self.sock.send(encoded_message[i:])
+            sent = self.socket.send(encoded_message[i:])
             if sent == 0:
-                raise Error.Messenger.ConnectionError('Connection broken')
+                raise error.ConnectionError('Connection broken')
             i += sent
 
     def close(self):
@@ -114,4 +114,4 @@ class Messenger(BaseClass):
         try:
             self.socket.connect((remote_addr, port))
         except timeout:
-            raise Error.Messenger.MessengerError('Connection timed out.')
+            raise error.MessengerError('Connection timed out.')
